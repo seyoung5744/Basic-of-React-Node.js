@@ -60,6 +60,17 @@ userSchema.pre("save", function (next) {
       next()
   }
 });
+
+
+userSchema.methodes.comparePassword = function(plainPassword, callback) { // 이곳 method명과 index.js method 명은 같아야함.
+    
+    // plainPassword 1234567   암호화된 비밀번호 $2b$10$ODMJ.RYOtI4ZK8H01HCnBOJt8KuinXLkD2cUZOherRqznHExGDUc2 이 두개가 같은지 체크
+    // 이미 암호화된 비번을 복호화 할순 없다.
+    bcrypt.compare(plainPassword, this.password, function(err, isMatch){
+        if(err) return callback(err),
+            callback(null, isMatch)
+    })
+}
 const User = mongoose.model("User", userSchema); // 스키마를 모델로 감싸준다.
 
 module.exports = { User }; // 다른 폴더에서도 해당 모델을 사용할 수 있도록 모듈화
