@@ -3,6 +3,8 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const saltRounds = 10; // salt를 10자리로 만들겠다.
+const jwt = require('jsonwebtoken')
+
 
 const userSchema = mongoose.Schema({
   name: {
@@ -62,15 +64,37 @@ userSchema.pre("save", function (next) {
 });
 
 
-userSchema.methodes.comparePassword = function(plainPassword, callback) { // 이곳 method명과 index.js method 명은 같아야함.
-    
+userSchema.methods.comparePassword = function(plainPassword, callback) { // 이곳 method명과 index.js method 명은 같아야함.
+
     // plainPassword 1234567   암호화된 비밀번호 $2b$10$ODMJ.RYOtI4ZK8H01HCnBOJt8KuinXLkD2cUZOherRqznHExGDUc2 이 두개가 같은지 체크
     // 이미 암호화된 비번을 복호화 할순 없다.
     bcrypt.compare(plainPassword, this.password, function(err, isMatch){
-        if(err) return callback(err),
-            callback(null, isMatch)
+        if(err) return callback(err);
+        callback(null, isMatch);
     })
 }
+
+userSchema.methods.generateToken = function(callback) {
+    var user = this;
+
+    // 3. 비밀번호까지 맞아면 토큰을 생성하기.
+    var token = jwt.sign(user._id.toHexString(), 'secretToken') // db에 있는 _id
+    
+    /*
+    user._id + 'secretToken' 로 token 생성
+    나중에 'secretToken' 을 이용해서 user._id를 얻어옴
+    */
+
+    // 위에서 만든 token을 스키마에 넣어주고 save
+    user.token = token 
+    user.save(function(err, user){
+        if(err) return callback(err)
+        callback(null, user)
+    })
+    
+    // 그리고 여기서 저장된 user 정보가 index.js의 user 로 감
+}
+
 const User = mongoose.model("User", userSchema); // 스키마를 모델로 감싸준다.
 
 module.exports = { User }; // 다른 폴더에서도 해당 모델을 사용할 수 있도록 모듈화
