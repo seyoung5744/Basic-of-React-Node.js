@@ -2,17 +2,60 @@ const express = require('express') // express 모듈 가져오기
 const app = express() // 해당 function을 이용해 새로운 express 앱을 만듦
 const port = 5000 // 해당 port back server
 
+const bodyParser = require('body-parser'); // 클라이언트 정보를 서버에서 분석해서 가져올 수 있게 해주는 것
+const { User } = require("./models/User");
+
+const config = require("./config/key");
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// https://stackoverflow.com/questions/24330014/bodyparser-is-deprecated-express-4
+// bodyParser 옵션 설정  
+// For Express version less than 4.16.0
+
+// application/x-www-form-urlencoded
+// app.use(bodyParser.urlencoded({extended: true}));
+
+// application.json
+// app.use(bodyParser.json())
+
+// Express v4.16.0 and higher
+app.use(express.json());
+app.use(express.urlencoded({
+  extended: true
+}));
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 const mongoose = require("mongoose")// mongo db 연결. mongoose는 ....
-mongoose.connect("mongodb+srv://wonseyoung:won9975744!@boilerplate.7idhg.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",{
+mongoose.connect(config.mongoURI,{
     useNewUrlParser : true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false
 }).then(() => console.log("MongoDB Connected..."))
 .catch(err => console.log(err))
 
-
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 app.get('/', (req, res) => { // root 디렉토리로 오면은 
-  res.send('Hello World!') // Hello world 출력
+  res.send('Hello World!~안녕하세요ㅋㅋㅋㅋㅋㅋㅋ') // Hello world 출력
 })
 
+// 회원 가입을 위한 router
+app.post('/register',(req, res)=>{
+    // 회원가입할 때 필요한 정보들을 client에서 가져오면 
+    // 그것들을 DB에 넣어준다.
+
+    // 1. User 인스턴스 생성
+    // 2. 클라이언트에 있는 정보들을 db에 넣어주기 위한 작업 req.body
+    // req.body 안에는 json 형식으로 { id : "hello" pwd:"111"} 이런식으로 데이터가 들어있다. 그리고 이 req.body안에 데이터가 들어 있을 수 있게 해주는 것이 body-parser
+    const user = new User(req.body)
+    
+    // .save() : mongo db에서 온 메소드
+    // req.body에 있는 정보들이 user model에 저장됨
+    user.save((err, userInfo) => {
+        if(err) return res.json({ success : false, err}) // 저장을 할 떄 err가 있으면 클라이언트에 err를 json형식으로 전달. 
+        return res.status(200).json({ // status(200) 성공했다는 의미
+            success: true
+        })
+    }) // postman을 이용해서 회원가입 test
+})
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`) // port 5000에서 이 앱을 실행
 })
