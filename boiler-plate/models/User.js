@@ -1,39 +1,65 @@
 // User model
 
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+const saltRounds = 10; // salt를 10자리로 만들겠다.
 
 const userSchema = mongoose.Schema({
-    name:{
-        type: String,
-        maxlength: 50
-    },
-    email:{
-        type: String,
-        trim: true, // 문자열에 공백 포함되면 삭제해줌
-        unique: 1 // email unique하게
-    },
-    password: {
-        type: String,
-        minlength: 5
-    },
-    lastname: {
-        type: String,
-        maxlength: 50
-    },
-    role: { // user의 역할에 따른 구분을 위해, 관리자 혹은 일반 유저
-        type: Number,
-        default: 0 
-    },
-    image: String,
-    token: { // 유효성 관리
-        type: String
-    },
-    tokenExp: { // 토큰 사용 유효기간
-        type: Number
-    }
-})
+  name: {
+    type: String,
+    maxlength: 50,
+  },
+  email: {
+    type: String,
+    trim: true, // 문자열에 공백 포함되면 삭제해줌
+    unique: 1, // email unique하게
+  },
+  password: {
+    type: String,
+    minlength: 5,
+  },
+  lastname: {
+    type: String,
+    maxlength: 50,
+  },
+  role: {
+    // user의 역할에 따른 구분을 위해, 관리자 혹은 일반 유저
+    type: Number,
+    default: 0,
+  },
+  image: String,
+  token: {
+    // 유효성 관리
+    type: String,
+  },
+  tokenExp: {
+    // 토큰 사용 유효기간
+    type: Number,
+  },
+});
 
-const User = mongoose.model("User", userSchema) // 스키마를 모델로 감싸준다.
+// user model에 user 정보를 저장하기 전에 사전 작업. next 인자를 만들고 function 작업이 끝나면 index.js의 save로 전달해준다.
+userSchema.pre("save", function (next) {
+  var user = this;
 
-module.exports = {User} // 다른 폴더에서도 해당 모델을 사용할 수 있도록 모듈화
+  if (user.isModified("password")) { // 비밀번호를 변경할 때만 암호화
+    // 비밀번호를 암호화 시킨다.
+    bcrypt.genSalt(saltRounds, function (err, salt) {
+      // salt 생성,  생성된 salt를 이용해서 비밀번호를 암호화
+      if (err) return next(err);
 
+      bcrypt.hash(user.password, salt, function (err, hash) {
+        // plane 패스워드를 가져온다.
+        // Store hash in your password DB.
+        if (err) return next(err);
+        user.password = hash; // 암호화가 성공하면 비번을 hash된 비번으로 바꿔서 보내준다.
+        next();
+      });
+    });
+  } else { // 비밀 번호를 바꾸는게 아니라 다른 부분 수정할 때는 그냥 next()가 필요함. 안그러면 위의 if 문 코드에 머뭄.
+      next()
+  }
+});
+const User = mongoose.model("User", userSchema); // 스키마를 모델로 감싸준다.
+
+module.exports = { User }; // 다른 폴더에서도 해당 모델을 사용할 수 있도록 모듈화
