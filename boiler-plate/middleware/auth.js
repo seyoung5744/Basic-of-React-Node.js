@@ -3,7 +3,7 @@ const { User } = require("../models/User");
 let auth = (req, res, next) => {
   // 인증 처리 하는 곳
   // 1. client cookie에서 token을 가져온다.
-  let token = req.cookie.x_auth;
+  let token = req.cookies.x_auth;
 
   // 2. token을 복호화한 후 서버에서 유저를 찾는다.
   User.findByToken(token, (err, user) => {
