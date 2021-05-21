@@ -96,6 +96,8 @@ app.post("/api/users/login", (req, res) => {
 
       // 3. 비밀번호까지 맞으면 토큰을 생성하기.
       user.generateToken((err, user) => {
+        // 클라이언트에서  json형식의 포맷을 받아야 한다면  json으로 보내면 되고,  그저 텍스트형식의 데이터를 받아야하면 send 로 보내면 됨.
+        
         if (err) return res.status(400).send(err); // 400으로 client에게 err가 있다는 것을 알려주고 err메시지는 send
 
         // 토큰을 저장한다 어디에? 쿠키, 로컬스토리지, 세션 (F12에서 확인가능.)
