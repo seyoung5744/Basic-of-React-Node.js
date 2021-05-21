@@ -1,6 +1,5 @@
 const express = require("express"); // express 모듈 가져오기
 const app = express(); // 해당 function을 이용해 새로운 express 앱을 만듦
-const port = 5000; // 해당 port back server
 
 const bodyParser = require("body-parser"); // 클라이언트 정보를 서버에서 분석해서 가져올 수 있게 해주는 것
 const cookieParser = require("cookie-parser");
@@ -149,6 +148,12 @@ app.get('/api/users/logout', auth, (req, res)=>{
       })
     }) 
 })
+
+//!------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+const port = 5000; // 해당 port back server
+
+
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`); // port 5000에서 이 앱을 실행
 });
