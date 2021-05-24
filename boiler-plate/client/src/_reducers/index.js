@@ -3,10 +3,10 @@
 // combineReducers는 이러한 여러 reducer들을 Root Reducer에서 하나로 합쳐주는 기능을 한다.
 
 import { combineReducers } from 'redux'; 
-//import user from './user_reducer';
+import user from './user_reducer';
 
 const rootReducer = combineReducers({
-    // user,
+    user
 })
 
 export default rootReducer;

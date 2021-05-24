@@ -16,12 +16,12 @@ import Reducer from './_reducers';
 const createStoreWithMiddleware = applyMiddleware(promiseMiddleware, ReduxThunk)(createStore)
 
 ReactDOM.render(
-  <Provider 
+  <Provider // redux랑 App이랑 연결 
       store={createStoreWithMiddleware(Reducer, 
-          window._REDUX_DEVTOOLS_EXTENSION__ &&
-          window._REDUX_DEVTOOLS_EXTENSION__()
+        window.__REDUX_DEVTOOLS_EXTENSION__ &&
+        window.__REDUX_DEVTOOLS_EXTENSION__()
         )}
-  > // redux랑 App이랑 연결 
+  > 
     <App />
   </Provider>,
   document.getElementById("root")
