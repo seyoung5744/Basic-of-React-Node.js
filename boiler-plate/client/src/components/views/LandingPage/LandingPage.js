@@ -1,5 +1,6 @@
 import React, {useEffect} from 'react'
 import axios from 'axios'
+import {withRouter} from 'react-router-dom';
 
 function LandingPage(porps) {
 
@@ -15,7 +16,7 @@ function LandingPage(porps) {
             .then(response => {
                 console.log(response.data)
                 if(response.data.success){
-                    porps.history.push("/login")
+                    porps.history.push("/login") // history는 react-router-dom을 이용해서 사용되고 있다. 
                 }else{
                     alert("로그아웃 하는데 실패하였습니다.")
                 }
@@ -39,4 +40,4 @@ function LandingPage(porps) {
     )
 }
 
-export default LandingPage
+export default withRouter(LandingPage)
