@@ -62,7 +62,7 @@ app.get("/api/hello", (req, res) => {
 app.post("/api/users/register", (req, res) => {
   // 회원가입할 때 필요한 정보들을 client에서 가져오면
   // 그것들을 DB에 넣어준다.
-
+  console.log(req.body)
   // 1. User 인스턴스 생성
   // 2. 클라이언트에 있는 정보들을 db에 넣어주기 위한 작업 req.body
   // req.body 안에는 json 형식으로 { id : "hello" pwd:"111"} 이런식으로 데이터가 들어있다. 그리고 이 req.body안에 데이터가 들어 있을 수 있게 해주는 것이 body-parser
@@ -71,13 +71,13 @@ app.post("/api/users/register", (req, res) => {
   // .save() : mongo db에서 온 메소드
   // req.body에 있는 정보들이 user model에 저장됨
   user.save((err, userInfo) => {
-    if (err) return res.json({ success: false, err }); // 저장을 할 떄 err가 있으면 클라이언트에 err를 json형식으로 전달.
+    if (err) return res.json({ success: false, err }) // 저장을 할 떄 err가 있으면 클라이언트에 err를 json형식으로 전달.
     return res.status(200).json({
       // status(200) 성공했다는 의미
-      success: true,
-    });
-  }); // postman을 이용해서 회원가입 test
-});
+      success: true
+    })
+  }) // postman을 이용해서 회원가입 test
+})
 
 //!------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // login router 만들기
